@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "888055634507",
+    "firebase_url": "https://my-survay.firebaseio.com",
+    "project_id": "my-survay",
+    "storage_bucket": "my-survay.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888055634507:android:b7ea480859eb2462",
+        "android_client_info": {
+          "package_name": "com.spk.questionnaire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888055634507-jblhesqivml0iq5mh0g9s5l1jcsrvfg6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.spk.questionnaire",
+            "certificate_hash": "af8e49e17e013156c2c5b0358ab9f3e2d8e5b8f6"
+          }
+        },
+        {
+          "client_id": "888055634507-tepsink4cuseumlhjdbvnt9badrgps1b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZWDIrCieAQd88WD9L3TSOPZh15VK_hws"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888055634507-tepsink4cuseumlhjdbvnt9badrgps1b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
