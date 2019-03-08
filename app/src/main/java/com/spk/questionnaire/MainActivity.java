@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     void setUpToolbar() {
         Toolbar mainPageToolbar = findViewById(R.id.mainPageToolbar);
         setSupportActionBar(mainPageToolbar);
-        getSupportActionBar().setTitle("Questionnaire Demo");
+        getSupportActionBar().setTitle("Social Media Advertising");
     }
 
     @Override

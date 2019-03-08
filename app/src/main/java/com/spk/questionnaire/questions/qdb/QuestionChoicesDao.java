@@ -16,5 +16,12 @@ public interface QuestionChoicesDao
     @Query("SELECT ans_choice_state FROM answer_choices WHERE question_id = :questionId AND ans_choice_pos =:optionId")
     String isChecked(String questionId, String optionId);
 
+    @Query("SELECT * FROM answer_choices WHERE ans_choice_state =:selected")
+    List<QuestionWithChoicesEntity> getAllQuestionsWithChoices(String selected);
 
+    @Query("DELETE FROM answer_choices")
+    void deleteAllChoicesOfQuestion();
+
+    @Insert
+    void insertAllChoicesOfQuestion(List<QuestionWithChoicesEntity> choices);
 }

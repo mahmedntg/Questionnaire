@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.spk.questionnaire.R;
 import com.spk.questionnaire.questions.QuestionActivity;
 import com.spk.questionnaire.questions.database.AppDatabase;
+import com.spk.questionnaire.questions.qdb.QuestionWithChoicesEntity;
 import com.spk.questionnaire.questions.questionmodels.AnswerOptions;
 import com.spk.questionnaire.questions.questionmodels.QuestionsItem;
 
@@ -30,6 +31,8 @@ import java.util.Map;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -54,10 +57,11 @@ public class RadioBoxesFragment extends Fragment {
     private int currentPagePosition = 0;
     private int clickedRadioButtonPosition = 0;
     private String qState = "0";
-    private Map<Integer, QuestionsItem> questionsItems = new HashMap<>();
+    private static Map<Integer, QuestionsItem> questionsItems = new HashMap<>();
     private int surveyId;
     private String surveyName;
     String androidId;
+    List<QuestionWithChoicesEntity> questionsWithAllChoicesList = new ArrayList<>();
 
     public RadioBoxesFragment() {
         // Required empty public constructor
@@ -66,8 +70,8 @@ public class RadioBoxesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_radio_boxes, container, false);
-        androidId = androidId == null ?Settings.Secure.getString(getActivity().getContentResolver(),
-                Settings.Secure.ANDROID_ID):androidId;
+        androidId = androidId == null ? Settings.Secure.getString(getActivity().getContentResolver(),
+                Settings.Secure.ANDROID_ID) : androidId;
         appDatabase = AppDatabase.getAppDatabase(getActivity());
 
         nextOrFinishButton = rootView.findViewById(R.id.nextOrFinishButton);
@@ -81,7 +85,7 @@ public class RadioBoxesFragment extends Fragment {
                 Intent returnIntent = new Intent();
                 mContext.setResult(Activity.RESULT_OK, returnIntent);
                 mContext.finish();
-
+                getResultFromDatabase();
             } else {
                 ((QuestionActivity) mContext).nextQuestion();
             }
@@ -101,7 +105,7 @@ public class RadioBoxesFragment extends Fragment {
             for (int i = 0; i < radioButtonArrayList.size(); i++) {
                 RadioButton radioButton = radioButtonArrayList.get(i);
                 String cbPosition = String.valueOf(i);
-                String answerName = (String)radioButton.getText();
+                String answerName = (String) radioButton.getText();
                 String[] data = new String[]{questionId, cbPosition};
 
                 Observable.just(data)
@@ -153,7 +157,7 @@ public class RadioBoxesFragment extends Fragment {
 
                     String[] data = new String[]{"1", questionId, cbPosition};
                     insertChoiceInDatabase(data);
-                    insertingInFireBase(data);
+
 
                 } else {
                     String cbPosition = String.valueOf(radioButtonArrayList.indexOf(radioButton));
@@ -183,18 +187,44 @@ public class RadioBoxesFragment extends Fragment {
         return "";
     }
 
-    private String insertingInFireBase(String[] data) {
-        QuestionsItem questionsItem = questionsItems.get(Integer.parseInt(data[1]));
-        AnswerOptions answerOption = questionsItem.getAnswerOptions().get(Integer.parseInt(data[2]));
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Map<String, Map<String, Object>> userAnswers = new HashMap<>();
-        Map<String, Object> answers = new HashMap<>();
-        answers.put("answers/" + data[1] + "/question_name", questionsItem.getQuestionName());
-        answers.put("answers/" + data[1] + "/answer_name", answerOption.getName());
-        DatabaseReference answersRef = database.getReference("user_answers").child(androidId).child(String.valueOf(surveyId));
-        answersRef.child("survey_name").setValue(surveyName);
-        answersRef.updateChildren(answers);
-        return "";
+    private void getResultFromDatabase() {
+        Completable.fromAction(() -> {
+            questionsWithAllChoicesList = appDatabase.getQuestionChoicesDao().getAllQuestionsWithChoices("1");
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        insertingInFireBase();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
+    }
+
+    private void insertingInFireBase() {
+        for (int i = 0; i < questionsWithAllChoicesList.size(); i++) {
+            String[] data = new String[]{"1", questionsWithAllChoicesList.get(i).getQuestionId(), questionsWithAllChoicesList.get(i).getAnswerChoicePosition()};
+            QuestionsItem questionsItem = questionsItems.get(Integer.parseInt(data[1]));
+            AnswerOptions answerOption = questionsItem.getAnswerOptions().get(Integer.parseInt(data[2]));
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            Map<String, Map<String, Object>> userAnswers = new HashMap<>();
+            Map<String, Object> answers = new HashMap<>();
+            answers.put("answers/" + data[1] + "/question_name", questionsItem.getQuestionName());
+            answers.put("answers/" + data[1] + "/answer_name", answerOption.getName());
+            answers.put("answers/" + data[1] + "/question_id", questionsItem.getId());
+            DatabaseReference answersRef = database.getReference("user_answers").child(androidId).child(String.valueOf(surveyId));
+            answersRef.child("survey_name").setValue(surveyName);
+            answersRef.updateChildren(answers);
+        }
     }
 
     @Override
