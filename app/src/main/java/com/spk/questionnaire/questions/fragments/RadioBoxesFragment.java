@@ -211,17 +211,20 @@ public class RadioBoxesFragment extends Fragment {
     }
 
     private void insertingInFireBase() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String key=database.getReference("user_answers").push().getKey();
         for (int i = 0; i < questionsWithAllChoicesList.size(); i++) {
             String[] data = new String[]{"1", questionsWithAllChoicesList.get(i).getQuestionId(), questionsWithAllChoicesList.get(i).getAnswerChoicePosition()};
             QuestionsItem questionsItem = questionsItems.get(Integer.parseInt(data[1]));
             AnswerOptions answerOption = questionsItem.getAnswerOptions().get(Integer.parseInt(data[2]));
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
             Map<String, Map<String, Object>> userAnswers = new HashMap<>();
             Map<String, Object> answers = new HashMap<>();
-            answers.put("answers/" + data[1] + "/question_name", questionsItem.getQuestionName());
-            answers.put("answers/" + data[1] + "/answer_name", answerOption.getName());
-            answers.put("answers/" + data[1] + "/question_id", questionsItem.getId());
-            DatabaseReference answersRef = database.getReference("user_answers").child(androidId).child(String.valueOf(surveyId));
+            answers.put( data[1] + "/question_name", questionsItem.getQuestionName());
+            answers.put( data[1] + "/answer_name", answerOption.getName());
+            answers.put( data[1] + "/question_id", questionsItem.getId());
+
+            DatabaseReference answersRef = database.getReference("user_answers").child(key).child(String.valueOf(surveyId));
             answersRef.child("survey_name").setValue(surveyName);
             answersRef.updateChildren(answers);
         }

@@ -26,15 +26,17 @@ import com.spk.questionnaire.answer.UserAnswer;
 import com.spk.questionnaire.questions.AnswersActivity;
 import com.spk.questionnaire.questions.QuestionActivity;
 import com.spk.questionnaire.questions.questionmodels.QuestionDataModel;
+import com.spk.questionnaire.questions.questionmodels.Survey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int QUESTIONNAIRE_REQUEST = 2018;
     private Button resultButton;
     private Button questionnaireButton;
-    private QuestionDataModel questionDataModel;
+    private QuestionDataModel questionDataModel = new QuestionDataModel();
     String jsonData;
     private ProgressDialog progressDialog;
     String androidId;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == QUESTIONNAIRE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                resultButton.setVisibility(View.VISIBLE);
+                //resultButton.setVisibility(View.VISIBLE);
                 Toast.makeText(this, "Questionnaire Completed!!", Toast.LENGTH_LONG).show();
             }
         }
@@ -95,15 +97,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent questions;
         switch (b.getId()) {
             case R.id.questionnaireButton:
-                if (userSurveyAnswer != null) {
+              /*  if (userSurveyAnswer != null) {
                     alertDialog.setMessage("You Already Voted !");
                     alertDialog.show();
-                } else {
-                    resultButton.setVisibility(View.GONE);
-                    questions = new Intent(MainActivity.this, QuestionActivity.class);
-                    questions.putExtra("questions", questionDataModel);
-                    startActivityForResult(questions, QUESTIONNAIRE_REQUEST);
-                }
+                } else {*/
+                resultButton.setVisibility(View.GONE);
+                questions = new Intent(MainActivity.this, QuestionActivity.class);
+                questions.putExtra("questions", questionDataModel);
+                startActivityForResult(questions, QUESTIONNAIRE_REQUEST);
+                //}
                 break;
             case R.id.resultButton:
                 questions = new Intent(MainActivity.this, AnswersActivity.class);
@@ -119,13 +121,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         questionnaireButton.setOnClickListener(this);
         resultButton.setOnClickListener(this);
         FirebaseDatabase dataBase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = dataBase.getReference();
+
+        DatabaseReference databaseReference = dataBase.getReference("survey");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Gson gson = new Gson();
-                questionDataModel = gson.fromJson(gson.toJson(dataSnapshot.getValue()), QuestionDataModel.class);
-                userSurveyAnswer = dataSnapshot.child("user_answers").child(androidId).child(String.valueOf(questionDataModel.getSurvey().getId())).getValue();
+                //questionDataModel=gson.fromJson(gson.toJson(dataSnapshot.getValue()), QuestionDataModel.class);
+                Survey survey = gson.fromJson(gson.toJson(dataSnapshot.getValue()), Survey.class);
+                questionDataModel.setSurvey(survey);
+                questionnaireButton.setText("Start " + survey.getName() + " Survey");
+                progressDialog.hide();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("Error", "loadPost:onCancelled", databaseError.toException());
+                progressDialog.hide();
+            }
+        });
+
+      /*  DatabaseReference databaseReference = dataBase.getReference();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Gson gson = new Gson();
+                questionDataModel=gson.fromJson(gson.toJson(dataSnapshot.getValue()), QuestionDataModel.class);
+
+                dataSnapshot = dataSnapshot.child("user_answers").getChildren().iterator().next();
+
+             //   userSurveyAnswer = dataSnapshot.child("user_answers").getChildren().iterator().
+                userSurveyAnswer = dataSnapshot.child(String.valueOf(questionDataModel.getSurvey().getId())).getValue();
                 if (userSurveyAnswer == null) {
                     resultButton.setVisibility(View.GONE);
                 }
@@ -139,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 progressDialog.hide();
             }
         });
+*/
+
 
     }
 }

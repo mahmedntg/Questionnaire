@@ -3,6 +3,7 @@ package com.spk.questionnaire.answer;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,9 @@ public class UserAnswer implements Serializable {
     @SerializedName("survey_name")
     private String surveyName;
 
+    /*@SerializedName("answers")
+    private List<Answer> answers = new ArrayList<>();
+    */
     @SerializedName("answers")
     private Map<String,Answer> answerMap=new HashMap<>();
 
@@ -25,6 +29,14 @@ public class UserAnswer implements Serializable {
     public void setAnswerMap(Map<String, Answer> answerMap) {
         this.answerMap = answerMap;
     }
+
+    /*public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }*/
 
     public String getSurveyName() {
         return surveyName;

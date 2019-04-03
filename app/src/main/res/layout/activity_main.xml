@@ -52,6 +52,7 @@
             android:layout_marginEnd="30dp"
             android:layout_marginStart="30dp"
             android:text="@string/show_result"
+            android:visibility="gone"
             android:textAllCaps="false"
             android:textSize="18sp"
             />
