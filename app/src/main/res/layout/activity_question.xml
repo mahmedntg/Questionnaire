@@ -58,7 +58,7 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <com.spk.questionnaire.questions.widgets.NoSwipeViewPager
+    <com.spk.myquestionnaire.questions.widgets.NoSwipeViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

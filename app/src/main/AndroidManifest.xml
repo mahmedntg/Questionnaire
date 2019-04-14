@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.spk.questionnaire"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.spk.myquestionnaire">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".application.QuestionnaireApp"
+        android:name="com.spk.myquestionnaire.application.QuestionnaireApp"
         android:allowBackup="true"
         android:icon="@mipmap/social_media"
         android:label="@string/app_name"
@@ -12,22 +14,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.spk.myquestionnaire.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".questions.QuestionActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name="com.spk.myquestionnaire.questions.QuestionActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".questions.AnswersActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:name="com.spk.myquestionnaire.questions.AnswersActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
